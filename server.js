@@ -66,7 +66,7 @@ app.get('/login-failed', (req,res) => {
     res.render('login-failed');
 });
 
-app.get('/lgout', (req, res)=> {
+app.get('/logout', (req, res)=> {
     const username = req.user?.username || 'Unknown';
     logSecurityEvent('LOGOUT', req, req.user?.id, username, 'User logged out');
 
@@ -97,7 +97,8 @@ app.post('/vault/save', requireAuth, (req, res) => {
     updateUserSecret(req.user.id,secret);
     logSecurityEvent('SECRET_UPDATED', req, req.user.id, req.user.username, 'User updated their secret');
 
-    const updatedUse = getUserById(req.user.id);
+    const updatedUser = getUserById(req.user.id);
+    req.user = updatedUser;
     res.render('vault', { user: updatedUser, message: 'Secret saved successfully' });
 });
 

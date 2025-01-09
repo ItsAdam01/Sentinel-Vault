@@ -2,39 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Security Audit Logs</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .ALERT { color: red; font-weight: bold; }
-        .WARN { color: orange; }
-        .INFO { color: blue; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <nav><a href="/vault">Back to Vault</a> | <a href="/lgout">Logout</a></nav>
-    <h1>Security Audit Logs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Timestamp</th>
-                <th>Event</th>
-                <th>User</th>
-                <th>Severity</th>
-                <th>Details</th>
-            </tr>
-        </thead>
-        <tbody>
-            <% logs.forEach(log => { %>
-                <tr>
-                    <td><%= log.timestamp %></td>
-                    <td><%= log.icon %> <%= log.event_type %></td>
-                    <td><%= log.username || 'Anonymous' %></td>
-                    <td class="<%= log.severity %>"><%= log.severity %></td>
-                    <td><%= log.details %></td>
-                </tr>
-            <% }) %>
-        </tbody>
-    </table>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <a href="/vault" class="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1 mb-2">
+                    ← Back to Vault
+                </a>
+                <h1 class="text-3xl font-bold">Security Audit Logs</h1>
+            </div>
+            <div class="text-right">
+                <span class="text-xs uppercase tracking-widest text-slate-500 font-bold">Active Session</span>
+                <p class="font-mono text-emerald-400"><%= user.username %></p>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800/50 text-slate-400 text-xs uppercase tracking-wider">
+                        <th class="px-6 py-4 font-semibold">Timestamp</th>
+                        <th class="px-6 py-4 font-semibold">Event</th>
+                        <th class="px-6 py-4 font-semibold">User</th>
+                        <th class="px-6 py-4 font-semibold">Severity</th>
+                        <th class="px-6 py-4 font-semibold">Details</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800">
+                    <% logs.forEach(log => { %>
+                        <tr class="hover:bg-slate-800/30 transition-colors">
+                            <td class="px-6 py-4 text-sm font-mono text-slate-500 whitespace-nowrap"><%= log.timestamp %></td>
+                            <td class="px-6 py-4 font-medium flex items-center gap-2">
+                                <span><%= log.icon %></span>
+                                <%= log.event_type %>
+                            </td>
+                            <td class="px-6 py-4 text-sm"><%= log.username || 'Anonymous' %></td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                    <%= log.severity === 'ALERT' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
+                                       log.severity === 'WARN' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' : 
+                                       'bg-blue-500/10 text-blue-500 border border-blue-500/20' %>">
+                                    <%= log.severity %>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-slate-400 italic"><%= log.details %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
