@@ -1,0 +1,98 @@
+const Database = require('better-sqlite3');
+const path = require('path');
+
+// Initialize SQLite database
+const db = new Database(path.join(__dirname, 'sentinel.db'), { verbose: console.log });
+
+// Create tables
+function initializeDatabase() {
+  // Users table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      username TEXT NOT NULL,
+      avatar_url TEXT,
+      secret TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // Audit logs table - The analyst's goldmine
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      event_type TEXT NOT NULL,
+      user_id TEXT,
+      username TEXT,
+      ip_address TEXT,
+      user_agent TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      details TEXT
+    )
+  `);
+
+  console.log('✅ Database initialized successfully');
+}
+
+// Security event logger - Core analyst function
+function logSecurityEvent(eventType, req, userId = null, username = null, details = null) {
+  const ip = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get('user-agent') || 'Unknown';
+
+  const stmt = db.prepare(`
+    INSERT INTO audit_logs (event_type, user_id, username, ip_address, user_agent, details)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+
+  stmt.run(eventType, userId, username, ip, userAgent, details);
+  
+  console.log(`🔒 Security Event: ${eventType} | User: ${username || 'Anonymous'} | IP: ${ip}`);
+}
+
+// Get all audit logs (for the dashboard)
+function getAuditLogs(limit = 50) {
+  const stmt = db.prepare(`
+    SELECT * FROM audit_logs 
+    ORDER BY timestamp DESC 
+    LIMIT ?
+  `);
+  return stmt.all(limit);
+}
+
+// User management functions
+function findOrCreateUser(profile) {
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(profile.id);
+  
+  if (user) {
+    return user;
+  }
+
+  const stmt = db.prepare(`
+    INSERT INTO users (id, username, avatar_url)
+    VALUES (?, ?, ?)
+  `);
+  
+  stmt.run(profile.id, profile.username, profile.photos?.[0]?.value || null);
+  return db.prepare('SELECT * FROM users WHERE id = ?').get(profile.id);
+}
+
+function getUserById(id) {
+  return db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+}
+
+function updateUserSecret(userId, secret) {
+  const stmt = db.prepare('UPDATE users SET secret = ? WHERE id = ?');
+  stmt.run(secret, userId);
+}
+
+// Initialize on module load
+initializeDatabase();
+
+module.exports = {
+  db,
+  logSecurityEvent,
+  getAuditLogs,
+  findOrCreateUser,
+  getUserById,
+  updateUserSecret
+};

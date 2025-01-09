@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentinel Vault - Home</title>
+</head>
+<body>
+    <h1>🛡️ Sentinel Vault</h1>
+    <% if (user) { %>
+        <p>Welcome back, <strong><%= user.username %></strong>!</p>
+        <a href="/vault"><button>Go to Vault</button></a>
+        <a href="/lgout">Logout</a>
+    <% } else { %>
+        <p>Please log in to access your secure vault.</p>
+        <a href="/auth/github">
+            <button>Login with GitHub</button>
+        </a>
+    <% } %>
+</body>
+</html>

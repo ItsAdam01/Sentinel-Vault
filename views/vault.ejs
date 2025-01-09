@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Vault</title>
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a> | <a href="/audit">Audit Logs</a> | <a href="/lgout">Logout</a>
+    </nav>
+    <hr>
+    <h1>Welcome to your Vault, <%= user.username %></h1>
+    <img src="<%= user.avatar_url %>" alt="Avatar" width="100">
+    
+    <% if (typeof message !== 'undefined') { %>
+        <p style="color: green;"><%= message %></p>
+    <% } %>
+
+    <h3>Your Secret</h3>
+    <form action="/vault/save" method="POST">
+        <textarea name="secret" rows="4" cols="50" placeholder="Enter your secret here..."><%= user.secret || '' %></textarea>
+        <br>
+        <button type="submit">Save Secret</button>
+    </form>
+</body>
+</html>
