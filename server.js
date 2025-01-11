@@ -19,7 +19,7 @@ app.use(session({
     cookie: {
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
-        maxAge: 24 * 60 ^ 60 * 1000
+        maxAge: 24 * 60 * 60 * 1000
     }
 }));
 
@@ -27,6 +27,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req,res,next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     console.log(`📍 ${req.method} ${req.path} | IP: ${req.ip}`);
     next();
 });
@@ -66,13 +67,15 @@ app.get('/login-failed', (req,res) => {
     res.render('login-failed');
 });
 
-app.get('/logout', (req, res)=> {
+app.get('/logout', (req, res, next)=> {
     const username = req.user?.username || 'Unknown';
     logSecurityEvent('LOGOUT', req, req.user?.id, username, 'User logged out');
 
     req.logout((err) => {
         if (err) { return next(err); }
-        res.redirect('/');
+        req.session.destroy(() => {
+            res.redirect('/');
+        });
     });
 });
 

@@ -1,7 +1,7 @@
 const Database = require('better-sqlite3');
 const path = require('path');
 
-// Initialize SQLite database
+
 const db = new Database(path.join(__dirname, 'sentinel.db'), { verbose: console.log });
 
 // Create tables
@@ -17,7 +17,6 @@ function initializeDatabase() {
     )
   `);
 
-  // Audit logs table - The analyst's goldmine
   db.exec(`
     CREATE TABLE IF NOT EXISTS audit_logs (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -31,25 +30,21 @@ function initializeDatabase() {
     )
   `);
 
-  console.log('✅ Database initialized successfully');
+  console.log('Database initialized successfully');
 }
 
-// Security event logger - Core analyst function
+
 function logSecurityEvent(eventType, req, userId = null, username = null, details = null) {
-  const ip = req.ip || req.connection.remoteAddress;
+  const ip = req.ip || req.connection.remoteAddress; 
   const userAgent = req.get('user-agent') || 'Unknown';
 
   const stmt = db.prepare(`
     INSERT INTO audit_logs (event_type, user_id, username, ip_address, user_agent, details)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-
   stmt.run(eventType, userId, username, ip, userAgent, details);
-  
-  console.log(`🔒 Security Event: ${eventType} | User: ${username || 'Anonymous'} | IP: ${ip}`);
 }
 
-// Get all audit logs (for the dashboard)
 function getAuditLogs(limit = 50) {
   const stmt = db.prepare(`
     SELECT * FROM audit_logs 
@@ -59,7 +54,7 @@ function getAuditLogs(limit = 50) {
   return stmt.all(limit);
 }
 
-// User management functions
+
 function findOrCreateUser(profile) {
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(profile.id);
   
@@ -85,7 +80,7 @@ function updateUserSecret(userId, secret) {
   stmt.run(secret, userId);
 }
 
-// Initialize on module load
+
 initializeDatabase();
 
 module.exports = {

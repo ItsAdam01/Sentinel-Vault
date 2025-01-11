@@ -1,60 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Security Audit Logs</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Audit Logs</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen">
-    <div class="max-w-7xl mx-auto p-6">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <a href="/vault" class="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1 mb-2">
-                    ← Back to Vault
-                </a>
-                <h1 class="text-3xl font-bold">Security Audit Logs</h1>
-            </div>
-            <div class="text-right">
-                <span class="text-xs uppercase tracking-widest text-slate-500 font-bold">Active Session</span>
-                <p class="font-mono text-emerald-400"><%= user.username %></p>
-            </div>
+
+<body class="bg-[#0f0f10] text-gray-300 min-h-screen flex">
+
+<!-- SIDEBAR -->
+<aside class="w-64 bg-[#141416] hidden md:flex flex-col h-screen sticky top-0 border-r border-black/40">
+
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <div class="px-6 py-6 border-b border-black/40">
+            <h2 class="text-lg font-semibold text-white">Vault</h2>
         </div>
 
-        <div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-2xl">
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-800/50 text-slate-400 text-xs uppercase tracking-wider">
-                        <th class="px-6 py-4 font-semibold">Timestamp</th>
-                        <th class="px-6 py-4 font-semibold">Event</th>
-                        <th class="px-6 py-4 font-semibold">User</th>
-                        <th class="px-6 py-4 font-semibold">Severity</th>
-                        <th class="px-6 py-4 font-semibold">Details</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-800">
-                    <% logs.forEach(log => { %>
-                        <tr class="hover:bg-slate-800/30 transition-colors">
-                            <td class="px-6 py-4 text-sm font-mono text-slate-500 whitespace-nowrap"><%= log.timestamp %></td>
-                            <td class="px-6 py-4 font-medium flex items-center gap-2">
-                                <span><%= log.icon %></span>
-                                <%= log.event_type %>
-                            </td>
-                            <td class="px-6 py-4 text-sm"><%= log.username || 'Anonymous' %></td>
-                            <td class="px-6 py-4">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase
-                                    <%= log.severity === 'ALERT' ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 
-                                       log.severity === 'WARN' ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20' : 
-                                       'bg-blue-500/10 text-blue-500 border border-blue-500/20' %>">
-                                    <%= log.severity %>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 text-sm text-slate-400 italic"><%= log.details %></td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        </div>
+        <nav class="px-4 py-6 space-y-1 text-sm">
+            <a href="/vault" class="block px-4 py-2 rounded-md text-gray-400 hover:bg-[#1c1d20] hover:text-white transition">
+                Dashboard
+            </a>
+            <a href="#" class="block px-4 py-2 rounded-md bg-[#1c1d20] text-white font-medium">
+                Security Logs
+            </a>
+        </nav>
     </div>
+
+    <div class="px-6 py-6 text-xs text-gray-500 border-t border-black/40 bg-[#141416]">
+        <p>Logged in as</p>
+        <div class="text-gray-300 font-medium mt-1 mb-4">
+            <%= user.username %>
+        </div>
+
+        <a href="/logout"
+           class="block w-full text-center bg-red-600 px-4 py-2 rounded text-white hover:bg-red-500 transition text-sm font-medium">
+            Logout
+        </a>
+    </div>
+
+</aside>
+
+
+
+<!-- MAIN -->
+<div class="flex-1 flex flex-col">
+
+    <!-- HEADER -->
+    <header class="px-10 py-8">
+        <div class="flex items-center justify-between">
+
+            <div>
+                <h1 class="text-3xl font-semibold text-white tracking-tight">
+                    Security Audit Logs
+                </h1>
+                <p class="text-gray-500 text-sm mt-2">
+                    Real-time activity and system security events
+                </p>
+            </div>
+
+            <input type="text"
+                   placeholder="Search logs..."
+                   class="bg-[#1c1d20] border border-black/40 rounded-md px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
+        </div>
+    </header>
+
+
+    <!-- CONTENT -->
+    <main class="px-10 pb-12 space-y-8">
+
+        <!-- STATS CARDS -->
+        <div class="grid md:grid-cols-3 gap-6">
+
+            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Alerts</p>
+                <p class="text-2xl font-bold mt-3 text-red-500">
+                    <%= logs.filter(l => l.severity === 'ALERT').length %>
+                </p>
+            </div>
+
+            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Warnings</p>
+                <p class="text-2xl font-bold mt-3 text-yellow-400">
+                    <%= logs.filter(l => l.severity === 'WARN').length %>
+                </p>
+            </div>
+
+            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
+                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Info Events</p>
+                <p class="text-2xl font-bold mt-3 text-blue-400">
+                    <%= logs.filter(l => l.severity === 'INFO').length %>
+                </p>
+            </div>
+
+        </div>
+
+
+
+        <!-- FILTER TABS -->
+        <div class="flex gap-3 text-xs font-medium">
+
+            <span class="px-3 py-1.5 rounded bg-red-600 text-white cursor-pointer">
+                Alert
+            </span>
+
+            <span class="px-3 py-1.5 rounded bg-yellow-500 text-black cursor-pointer">
+                Warn
+            </span>
+
+            <span class="px-3 py-1.5 rounded bg-blue-600 text-white cursor-pointer">
+                Info
+            </span>
+
+        </div>
+
+
+
+        <!-- TABLE -->
+        <div class="space-y-3">
+
+            <div class="grid grid-cols-5 gap-6 px-6 text-xs uppercase text-gray-500 tracking-wide mb-2">
+                <div>Timestamp</div>
+                <div>Event</div>
+                <div>User</div>
+                <div>IP Address</div>
+                <div>Status</div>
+            </div>
+
+
+            <% logs.forEach(log => { %>
+
+            <div class="bg-[#17181a] rounded-lg px-6 py-5 shadow-md shadow-black/30 hover:bg-[#1c1d20] transition">
+
+                <div class="grid grid-cols-5 gap-6 items-center text-sm">
+
+                    <div class="font-mono text-gray-500">
+                        <%= log.timestamp %>
+                    </div>
+
+                    <div class="flex items-center gap-3 text-gray-200 font-medium">
+                        <span><%= log.icon %></span>
+                        <span><%= log.event_type %></span>
+                    </div>
+
+                    <div class="text-gray-400">
+                        <%= log.username || 'Anonymous' %>
+                    </div>
+
+                    <div class="font-mono text-gray-500 text-xs">
+                        <%= log.ip_address || 'Unknown' %>
+                    </div>
+
+                    <div>
+                        <span class="px-3 py-1 rounded text-xs font-semibold
+                            <%= log.severity === 'ALERT' ? 'bg-red-600 text-white' :
+                            log.severity === 'WARN' ? 'bg-yellow-500 text-black' :
+                            'bg-blue-600 text-white' %>">
+                            <%= log.severity %>
+                        </span>
+                    </div>
+
+
+
+                </div>
+
+                <!-- DETAILS -->
+                <div class="mt-4 bg-[#111112] p-4 rounded text-sm text-gray-400">
+                    <p class="text-gray-300 font-medium mb-2">Details</p>
+                    <p><%= log.details %></p>
+                </div>
+
+            </div>
+
+            <% }) %>
+
+        </div>
+
+    </main>
+</div>
+
 </body>
 </html>

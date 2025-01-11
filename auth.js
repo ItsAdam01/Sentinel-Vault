@@ -2,7 +2,6 @@ const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const { findOrCreateUser, getUserById, logSecurityEvent } = require('./database');
 
-// At the top of auth.js, after require statements
 console.log('GitHub Client ID:', process.env.GITHUB_CLIENT_ID);
 console.log('GitHub Client Secret exists:', !!process.env.GITHUB_CLIENT_SECRET);
 console.log('Callback URL:', `http://localhost:${process.env.PORT}/auth/github/callback`);
