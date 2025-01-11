@@ -3,6 +3,7 @@ const express = require('express');
 const session = require('express-session');
 const passport = require('./auth');
 const { logSecurityEvent, getAuditLogs, updateUserSecret, getUserById } = require('./database');
+const UAParser = require('ua-parser-js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -106,25 +107,28 @@ app.post('/vault/save', requireAuth, (req, res) => {
 });
 
 // Audit logs
-app.get('/audit', requireAuth, (req,res)=>{
-    const logs = getAuditLogs(100);
+app.get('/audit', requireAuth, (req, res) => {
+    const logs = getAuditLogs(100); 
 
     const classifiedLogs = logs.map(log => {
-        let severity = 'INFO';
-        let icon = '🟢';
+        let severity = 'INFO'; 
+        let icon = '🟢'; 
         
-        if (log.event_type.includes('FAILURE') || log.event_type.includes('UNAUTHORIZED')) {
-        severity = log.event_type.includes('UNAUTHORIZED') ? 'ALERT' : 'WARN';
-        icon = log.event_type.includes('UNAUTHORIZED') ? '🔴' : '🟡';
+        if (log.event_type.includes('FAILURE') || log.event_type.includes('UNAUTHORIZED')) { 
+            severity = log.event_type.includes('UNAUTHORIZED') ? 'ALERT' : 'WARN'; 
+            icon = log.event_type.includes('UNAUTHORIZED') ? '🔴' : '🟡'; 
         }
-        
-        return { ...log, severity, icon };
+  
+        return { 
+            ...log, 
+            severity, 
+            icon,
+            deviceInfo: `${log.browser || 'Unknown'} on ${log.os || 'Unknown OS'}`
+        };
     });
 
-    logSecurityEvent('AUDIT_VIEW', req, req.user.id, req.user.username, 'Viewed audit logs');
-    res.render('audit', { logs: classifiedLogs, user: req.user });
+    res.render('audit', { logs: classifiedLogs, user: req.user }); 
 });
-
 app.listen(PORT, () => {
   console.log(`
   ╔═══════════════════════════════════════════╗

@@ -1,125 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Security Audit Logs</title>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Logs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f0f10; }
+        ::-webkit-scrollbar-thumb { background: #1c1d20; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2a2b2e; }
+    </style>
 </head>
 
-<body class="bg-[#0f0f10] text-gray-300 min-h-screen flex">
+<body class="bg-[#0f0f10] text-gray-300 min-h-screen flex font-sans">
 
-<!-- SIDEBAR -->
-<aside class="w-64 bg-[#141416] hidden md:flex flex-col h-screen sticky top-0 border-r border-black/40">
-
+<aside class="w-64 bg-[#141416] hidden md:flex flex-col h-screen sticky top-0 border-r border-white/5">
     <div class="flex-1 flex flex-col overflow-y-auto">
-        <div class="px-6 py-6 border-b border-black/40">
-            <h2 class="text-lg font-semibold text-white">Vault</h2>
+        <div class="px-6 py-8">
+            <h2 class="text-xl font-bold text-white tracking-tight">Vault</h2>
         </div>
 
-        <nav class="px-4 py-6 space-y-1 text-sm">
-            <a href="/vault" class="block px-4 py-2 rounded-md text-gray-400 hover:bg-[#1c1d20] hover:text-white transition">
+        <nav class="px-3 space-y-1 text-sm">
+            <a href="/vault" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1c1d20] hover:text-white transition-all duration-200">
                 Dashboard
             </a>
-            <a href="#" class="block px-4 py-2 rounded-md bg-[#1c1d20] text-white font-medium">
+            <a href="#" class="flex items-center px-4 py-3 rounded-lg bg-[#1c1d20] text-white font-medium shadow-lg shadow-black/20">
                 Security Logs
             </a>
         </nav>
     </div>
 
-    <div class="px-6 py-6 text-xs text-gray-500 border-t border-black/40 bg-[#141416]">
-        <p>Logged in as</p>
-        <div class="text-gray-300 font-medium mt-1 mb-4">
+    <div class="px-6 py-6 border-t border-white/5 bg-[#141416]">
+        <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Logged in as</p>
+        <div class="text-gray-300 font-medium mt-1 mb-6 truncate">
             <%= user.username %>
         </div>
 
         <a href="/logout"
-           class="block w-full text-center bg-red-600 px-4 py-2 rounded text-white hover:bg-red-500 transition text-sm font-medium">
+           class="block w-full text-center bg-[#ef4444] px-4 py-2.5 rounded-lg text-white hover:bg-red-500 transition-all duration-200 text-sm font-bold shadow-lg shadow-red-900/20">
             Logout
         </a>
     </div>
-
 </aside>
 
-
-
-<!-- MAIN -->
 <div class="flex-1 flex flex-col">
 
-    <!-- HEADER -->
-    <header class="px-10 py-8">
+    <header class="px-10 py-10 bg-[#0f0f10]">
         <div class="flex items-center justify-between">
-
             <div>
-                <h1 class="text-3xl font-semibold text-white tracking-tight">
-                    Security Audit Logs
-                </h1>
-                <p class="text-gray-500 text-sm mt-2">
-                    Real-time activity and system security events
-                </p>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Security Audit Logs</h1>
+                <p class="text-gray-500 text-sm mt-1">Real-time activity and system security events</p>
             </div>
 
-            <input type="text"
-                   placeholder="Search logs..."
-                   class="bg-[#1c1d20] border border-black/40 rounded-md px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
+            <div class="relative">
+                <input type="text"
+                       placeholder="Search logs..."
+                       class="bg-[#17181a] border border-white/5 rounded-lg px-5 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-64 transition-all">
+            </div>
         </div>
     </header>
 
+    <main class="px-10 pb-16 space-y-10">
 
-    <!-- CONTENT -->
-    <main class="px-10 pb-12 space-y-8">
-
-        <!-- STATS CARDS -->
         <div class="grid md:grid-cols-3 gap-6">
-
-            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
-                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Alerts</p>
-                <p class="text-2xl font-bold mt-3 text-red-500">
+            <div class="bg-[#17181a] rounded-xl p-7 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Alerts</p>
+                <p class="text-3xl font-black mt-4 text-[#ef4444]">
                     <%= logs.filter(l => l.severity === 'ALERT').length %>
                 </p>
             </div>
 
-            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
-                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Warnings</p>
-                <p class="text-2xl font-bold mt-3 text-yellow-400">
+            <div class="bg-[#17181a] rounded-xl p-7 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Warnings</p>
+                <p class="text-3xl font-black mt-4 text-[#f59e0b]">
                     <%= logs.filter(l => l.severity === 'WARN').length %>
                 </p>
             </div>
 
-            <div class="bg-[#17181a] rounded-lg p-6 shadow-lg shadow-black/30">
-                <p class="text-xs uppercase tracking-wide text-gray-500 font-semibold">Info Events</p>
-                <p class="text-2xl font-bold mt-3 text-blue-400">
+            <div class="bg-[#17181a] rounded-xl p-7 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold">Info Events</p>
+                <p class="text-3xl font-black mt-4 text-[#3b82f6]">
                     <%= logs.filter(l => l.severity === 'INFO').length %>
                 </p>
             </div>
-
         </div>
 
-
-
-        <!-- FILTER TABS -->
-        <div class="flex gap-3 text-xs font-medium">
-
-            <span class="px-3 py-1.5 rounded bg-red-600 text-white cursor-pointer">
-                Alert
-            </span>
-
-            <span class="px-3 py-1.5 rounded bg-yellow-500 text-black cursor-pointer">
-                Warn
-            </span>
-
-            <span class="px-3 py-1.5 rounded bg-blue-600 text-white cursor-pointer">
-                Info
-            </span>
-
+        <div class="flex gap-2">
+            <button class="px-4 py-1.5 rounded-md bg-[#ef4444] text-[11px] font-bold text-white uppercase tracking-wider hover:opacity-90 transition">Alert</button>
+            <button class="px-4 py-1.5 rounded-md bg-[#f59e0b] text-[11px] font-bold text-black uppercase tracking-wider hover:opacity-90 transition">Warn</button>
+            <button class="px-4 py-1.5 rounded-md bg-[#3b82f6] text-[11px] font-bold text-white uppercase tracking-wider hover:opacity-90 transition">Info</button>
         </div>
 
-
-
-        <!-- TABLE -->
-        <div class="space-y-3">
-
-            <div class="grid grid-cols-5 gap-6 px-6 text-xs uppercase text-gray-500 tracking-wide mb-2">
+        <div class="space-y-4">
+            <div class="grid grid-cols-5 gap-6 px-8 text-[10px] uppercase font-bold text-gray-600 tracking-[0.15em]">
                 <div>Timestamp</div>
                 <div>Event</div>
                 <div>User</div>
@@ -127,57 +101,86 @@
                 <div>Status</div>
             </div>
 
-
-            <% logs.forEach(log => { %>
-
-            <div class="bg-[#17181a] rounded-lg px-6 py-5 shadow-md shadow-black/30 hover:bg-[#1c1d20] transition">
-
-                <div class="grid grid-cols-5 gap-6 items-center text-sm">
-
-                    <div class="font-mono text-gray-500">
+            <% logs.forEach((log, index) => { %> 
+            <div class="bg-[#17181a] rounded-xl border border-white/5 shadow-xl shadow-black/40 overflow-hidden group">
+                
+                <div onclick="toggleDetails('details-<%= index %>')" 
+                    class="grid grid-cols-5 gap-6 px-8 py-6 items-center text-sm cursor-pointer hover:bg-[#1c1d20] transition-colors duration-200">
+                    
+                    <div class="font-mono text-gray-500 text-xs tracking-tighter">
                         <%= log.timestamp %>
                     </div>
 
-                    <div class="flex items-center gap-3 text-gray-200 font-medium">
-                        <span><%= log.icon %></span>
-                        <span><%= log.event_type %></span>
+                    <div class="flex items-center gap-3 text-white font-semibold">
+                        <span class="text-lg leading-none"><%= log.icon %></span>
+                        <span class="tracking-tight uppercase text-xs"><%= log.event_type %></span>
                     </div>
 
-                    <div class="text-gray-400">
+                    <div class="text-gray-400 font-medium">
                         <%= log.username || 'Anonymous' %>
                     </div>
 
                     <div class="font-mono text-gray-500 text-xs">
-                        <%= log.ip_address || 'Unknown' %>
+                        <%= log.ip_address %>
                     </div>
 
                     <div>
-                        <span class="px-3 py-1 rounded text-xs font-semibold
-                            <%= log.severity === 'ALERT' ? 'bg-red-600 text-white' :
-                            log.severity === 'WARN' ? 'bg-yellow-500 text-black' :
-                            'bg-blue-600 text-white' %>">
+                        <span class="px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest shadow-sm
+                            <%= log.severity === 'ALERT' ? 'bg-[#ef4444] text-white' :
+                            log.severity === 'WARN' ? 'bg-[#f59e0b] text-black' :
+                            'bg-[#3b82f6] text-white' %>">
                             <%= log.severity %>
                         </span>
                     </div>
-
-
-
                 </div>
 
-                <!-- DETAILS -->
-                <div class="mt-4 bg-[#111112] p-4 rounded text-sm text-gray-400">
-                    <p class="text-gray-300 font-medium mb-2">Details</p>
-                    <p><%= log.details %></p>
-                </div>
+                <div id="details-<%= index %>" class="hidden bg-[#0a0a0b] border-t border-white/5 p-8 space-y-8 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div class="grid md:grid-cols-2 gap-10">
+                        
+                        <div class="space-y-5">
+                            <h4 class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">HTTP Metadata</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                    <p class="text-[10px] uppercase font-bold text-gray-600 mb-2">Method</p>
+                                    <p class="text-blue-400 font-mono font-bold text-sm tracking-widest"><%= log.method || 'GET' %></p>
+                                </div>
+                                <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                    <p class="text-[10px] uppercase font-bold text-gray-600 mb-2">Status Code</p>
+                                    <p class="<%= (log.status_code >= 400) ? 'text-red-500' : 'text-emerald-500' %> font-mono font-bold text-sm"><%= log.status_code || 200 %></p>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="space-y-5">
+                            <h4 class="text-[10px] font-black text-gray-600 uppercase tracking-[0.2em]">Origin Device</h4>
+                            <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                <p class="text-[10px] uppercase font-bold text-gray-600 mb-2">Detected System</p>
+                                <p class="text-gray-200 font-bold text-sm mb-3"><%= log.deviceInfo %></p>
+                                <p class="text-gray-500 font-mono text-[10px] leading-relaxed break-all bg-black/30 p-2 rounded border border-white/5"><%= log.user_agent %></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-white/5">
+                        <p class="text-[10px] uppercase font-bold text-gray-600 mb-3 tracking-widest">Details</p>
+                        <div class="p-4 bg-[#111112] rounded-lg border border-white/5 text-gray-300 italic text-sm leading-relaxed">
+                            "<%= log.details %>"
+                        </div>
+                    </div>
+                </div>
             </div>
-
             <% }) %>
-
         </div>
-
     </main>
 </div>
+
+<script>
+function toggleDetails(id) {
+    const el = document.getElementById(id);
+    // Use transition or immediate toggle
+    el.classList.toggle('hidden');
+}
+</script>
 
 </body>
 </html>

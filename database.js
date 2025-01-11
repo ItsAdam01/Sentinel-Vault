@@ -1,3 +1,4 @@
+const UAParser = require('ua-parser-js');
 const Database = require('better-sqlite3');
 const path = require('path');
 
@@ -26,7 +27,11 @@ function initializeDatabase() {
       ip_address TEXT,
       user_agent TEXT,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-      details TEXT
+      details TEXT,
+      method TEXT,
+      status_code INTEGER,
+      browser TEXT,
+      os TEXT
     )
   `);
 
@@ -36,13 +41,24 @@ function initializeDatabase() {
 
 function logSecurityEvent(eventType, req, userId = null, username = null, details = null) {
   const ip = req.ip || req.connection.remoteAddress; 
-  const userAgent = req.get('user-agent') || 'Unknown';
-
+  const userAgent = req.get('user-agent') || 'Unknown'; 
+  
+  const ua = new UAParser(userAgent).getResult();
+  
   const stmt = db.prepare(`
-    INSERT INTO audit_logs (event_type, user_id, username, ip_address, user_agent, details)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO audit_logs (
+      event_type, user_id, username, ip_address, user_agent, 
+      details, method, status_code, browser, os
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  stmt.run(eventType, userId, username, ip, userAgent, details);
+
+  const statusCode = (eventType.includes('FAILURE') || eventType.includes('UNAUTHORIZED')) ? 403 : 200;
+
+  stmt.run(
+    eventType, userId, username, ip, userAgent, 
+    details, req.method, statusCode, ua.browser.name, ua.os.name
+  );
 }
 
 function getAuditLogs(limit = 50) {
