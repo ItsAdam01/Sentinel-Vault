@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Audit Logs</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f0f10; }
+        ::-webkit-scrollbar-thumb { background: #2a2b2e; border-radius: 10px; }
+    </style>
+</head>
+
+<body class="bg-[#0f0f10] text-gray-300 min-h-screen flex">
+
+<aside class="w-64 bg-[#141416] hidden md:flex flex-col h-screen sticky top-0 border-r border-white/5">
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <div class="px-7 py-9">
+            <h2 class="text-xl font-bold text-white tracking-tight">Vault</h2>
+        </div>
+
+        <nav class="px-4 space-y-1.5 text-sm">
+            <a href="/vault" class="flex items-center px-4 py-3 rounded-lg text-gray-400 hover:bg-[#1c1d20] hover:text-white transition-all">
+                Dashboard
+            </a>
+            <a href="#" class="flex items-center px-4 py-3 rounded-lg bg-[#1c1d20] text-white font-semibold shadow-xl shadow-black/20">
+                Security Logs
+            </a>
+        </nav>
+    </div>
+
+    <div class="px-7 py-7 border-t border-white/5 bg-[#141416]">
+        <p class="text-[11px] uppercase tracking-widest text-gray-500 font-bold mb-1">Authenticated</p>
+        <div class="text-gray-200 text-base font-medium mb-5 truncate">
+            <%= user.username %> 
+        </div>
+
+        <a href="/logout"
+           class="block w-full text-center bg-[#ef4444] px-4 py-3 rounded-lg text-white hover:bg-red-500 transition-all text-xs font-bold uppercase tracking-widest shadow-lg shadow-red-900/20">
+            Logout 
+        </a>
+    </div>
+</aside>
+
+<div class="flex-1 flex flex-col">
+
+    <header class="px-10 py-10 bg-[#0f0f10]">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-white tracking-tight">Security Audit Logs </h1>
+                <p class="text-gray-500 text-base mt-1">Real-time system security events </p>
+            </div>
+
+            <div class="relative">
+                <input type="text"
+                       placeholder="Search logs..."
+                       class="bg-[#17181a] border border-white/5 rounded-lg px-5 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/30 w-72 ">
+            </div>
+        </div>
+    </header>
+
+    <main class="px-10 pb-16 space-y-10">
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-[#17181a] rounded-xl p-6 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">Total Alerts</p>
+                <p class="text-3xl font-bold mt-3 text-[#ef4444]">
+                    <%= logs.filter(l => l.severity === 'ALERT').length %> 
+                </p>
+            </div>
+
+            <div class="bg-[#17181a] rounded-xl p-6 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">Warnings</p>
+                <p class="text-3xl font-bold mt-3 text-[#f59e0b]">
+                    <%= logs.filter(l => l.severity === 'WARN').length %> 
+                </p>
+            </div>
+
+            <div class="bg-[#17181a] rounded-xl p-6 border border-white/5 shadow-2xl shadow-black/50">
+                <p class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">Info Events</p>
+                <p class="text-3xl font-bold mt-3 text-[#3b82f6]">
+                    <%= logs.filter(l => l.severity === 'INFO').length %> 
+                </p>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="grid grid-cols-5 gap-6 px-8 text-[11px] uppercase font-bold text-gray-600 tracking-wider">
+                <div>Timestamp</div>
+                <div>Event Type</div>
+                <div>Account</div>
+                <div>Source IP</div>
+                <div class="text-right">Severity</div>
+            </div>
+
+            <% logs.forEach((log, index) => { %> 
+            <div class="bg-[#17181a] rounded-xl border border-white/5 shadow-xl shadow-black/40 overflow-hidden">
+                
+                <div onclick="toggleDetails('details-<%= index %>')" 
+                    class="grid grid-cols-5 gap-6 px-8 py-5 items-center text-sm cursor-pointer hover:bg-[#1c1d20] transition-all">
+                    
+                    <div class="font-mono text-gray-500 text-xs"><%= log.timestamp %> </div>
+                    <div class="flex items-center gap-3 text-white font-semibold">
+                        <span class="text-lg"><%= log.icon %> </span>
+                        <span class="truncate uppercase text-xs tracking-tight"><%= log.event_type %> </span>
+                    </div>
+                    <div class="text-gray-400 font-medium truncate"><%= log.username || 'Anonymous' %> </div>
+                    <div class="font-mono text-gray-500 text-xs"><%= log.ip_address %> </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest
+                            <%= log.severity === 'ALERT' ? 'bg-[#ef4444] text-white' :
+                            log.severity === 'WARN' ? 'bg-[#f59e0b] text-black' :
+                            'bg-[#3b82f6] text-white' %>">
+                            <%= log.severity %> 
+                        </span>
+                    </div>
+                </div>
+
+                <div id="details-<%= index %>" class="hidden bg-[#0a0a0b] border-t border-white/5 p-8 space-y-8">
+                    <div class="grid md:grid-cols-2 gap-10">
+                        <div class="space-y-4">
+                            <h4 class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">HTTP Metadata</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                    <p class="text-[10px] font-bold text-gray-600 mb-2 uppercase">Method</p>
+                                    <p class="text-blue-400 font-mono font-bold text-base"><%= log.method || 'GET' %> </p>
+                                </div>
+                                <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                    <p class="text-[10px] font-bold text-gray-600 mb-2 uppercase">Status</p>
+                                    <p class="<%= (log.status_code >= 400) ? 'text-red-500' : 'text-emerald-500' %> font-mono font-bold text-base"><%= log.status_code || 200 %> </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="text-[10px] font-bold text-gray-600 uppercase tracking-[0.2em]">Origin Device</h4>
+                            <div class="p-4 bg-[#111112] rounded-lg border border-white/5">
+                                <p class="text-[10px] font-bold text-gray-600 mb-2 uppercase">Detected System</p>
+                                <p class="text-gray-200 font-bold text-sm mb-3"><%= log.deviceInfo %> </p>
+                                <p class="text-gray-500 font-mono text-[10px] leading-relaxed break-all p-3 bg-black/30 rounded border border-white/5"><%= log.user_agent %> </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-6 border-t border-white/5">
+                        <p class="text-[10px] font-bold text-gray-600 mb-3 uppercase tracking-widest">Analyst Details</p>
+                        <div class="p-4 bg-[#111112] rounded-lg border border-white/5 text-gray-300 italic text-sm leading-relaxed">
+                            "<%= log.details %>" 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </main>
+</div>
+
+<script>
+function toggleDetails(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('hidden');
+}
+</script>
+
+</body>
+</html>
