@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      # Persist the SQLite database file
+      - ./sentinel.db:/usr/src/app/sentinel.db
+    restart: always
