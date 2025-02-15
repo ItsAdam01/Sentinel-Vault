@@ -47,3 +47,5 @@ npm start
 ```
 
 I am still learning a lot about web security, so I am excited to keep improving this vault as I discover more about protecting data.
+
+<!-- Sentinel Vault - Secure and Transparent -->
