@@ -1,20 +1,27 @@
-# Use the official Node.js 18 image as our base
+# Use Node.js 18 slim version
 FROM node:18-slim
 
-# Create and change to the app directory
+# Install build tools for better-sqlite3: python3: make: and g++
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
 WORKDIR /usr/src/app
 
-# Copy package files first to leverage Docker's cache
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install project dependencies
 RUN npm install
 
-# Copy the rest of the application code
+# Copy the source code
 COPY . .
 
-# Expose the port our app runs on
+# Expose port 3000
 EXPOSE 3000
 
-# Start the application
+# Run the server
 CMD ["npm", "start"]

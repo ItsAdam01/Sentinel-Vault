@@ -3,9 +3,10 @@ services:
     build: .
     ports:
       - "3000:3000"
+    # Load secrets from the local .env file
     env_file:
       - .env
     volumes:
-      # Persist the SQLite database file
+      # Persist the database file so data stays after restarts
       - ./sentinel.db:/usr/src/app/sentinel.db
     restart: always
